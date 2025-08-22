@@ -47,7 +47,7 @@ A modern, responsive React web application for discovering and managing your fav
 
 ---
 
-## 🛠️ Technologies Used
+## Technologies Used
 - **React 18** - Modern React with Hooks
 - **Tailwind CSS** - Utility-first CSS framework
 - **Lucide React** - Beautiful, customizable icons
@@ -56,11 +56,11 @@ A modern, responsive React web application for discovering and managing your fav
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 - Node.js (v14 or higher)
-- npm or yarn package manager
+- npm 
 
 ### Installation
 1. **Clone the repository**
