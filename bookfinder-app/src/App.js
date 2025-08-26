@@ -49,7 +49,7 @@ const BookFinder = () => {
 
   // Site configuration - Easy to customize
   const siteConfig = {
-    name: 'Bookful', // Change this to your desired site name
+    name: 'Bookshelf', // Change this to your desired site name
     subtitle: 'Strive For Knowledge',
     logo: Feather, // You can change this to any Lucide icon
     fontStyle: 'font-bold bg-gradient-to-r bg-clip-text text-transparent' // Custom font styling
