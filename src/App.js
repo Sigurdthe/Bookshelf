@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Heart, BookOpen, Feather, User, Calendar, Palette } from 'lucide-react';
+import { Search, Heart, BookOpen, Feather, User, Calendar, Palette, Moon, Sun } from 'lucide-react';
 
 const BookFinder = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -9,6 +9,7 @@ const BookFinder = () => {
   const [favorites, setFavorites] = useState([]);
   const [currentPage, setCurrentPage] = useState('home');
   const [currentTheme, setCurrentTheme] = useState('blue');
+  const [isDarkMode, setIsDarkMode] = useState(false);
 
   // Theme configurations
   const themes = {
@@ -48,8 +49,8 @@ const BookFinder = () => {
 
   // Site configuration - Easy to customize
   const siteConfig = {
-    name: 'Book900', // Change this to your desired site name
-    subtitle: 'Discover Your Next Great Read',
+    name: 'Bookshelf', // Change this to your desired site name
+    subtitle: 'Strive For Knowledge',
     logo: Feather, // You can change this to any Lucide icon
     fontStyle: 'font-bold bg-gradient-to-r bg-clip-text text-transparent' // Custom font styling
   };
@@ -201,13 +202,17 @@ const BookFinder = () => {
 
   const getThemeClasses = (variant = 'primary') => {
     const primary = theme.primary;
+    const darkPrefix = isDarkMode ? 'dark:' : '';
+    
     switch (variant) {
       case 'button':
         return `bg-${primary}-600 hover:bg-${primary}-700 text-white`;
       case 'active':
         return `bg-${primary}-600 text-white shadow-lg`;
       case 'accent':
-        return `text-${primary}-600 bg-${primary}-50`;
+        return isDarkMode 
+          ? `text-${primary}-400 bg-${primary}-900/30` 
+          : `text-${primary}-600 bg-${primary}-50`;
       case 'border':
         return `border-${primary}-500 focus:border-${primary}-500`;
       case 'gradient':
@@ -220,7 +225,9 @@ const BookFinder = () => {
   const LogoIcon = siteConfig.logo;
 
   const BookCard = ({ book }) => (
-    <div className="bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
+    <div className={`rounded-xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 ${
+      isDarkMode ? 'bg-gray-800' : 'bg-white'
+    }`}>
       <div className="relative group">
         <img
           src={book.imageLinks?.thumbnail || 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=300&h=400&fit=crop'}
@@ -242,21 +249,23 @@ const BookFinder = () => {
           </span>
         </div>
         
-        <h3 className="text-xl font-bold text-gray-800 mb-2 line-clamp-2">{book.title}</h3>
+        <h3 className={`text-xl font-bold mb-2 line-clamp-2 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
+          {book.title}
+        </h3>
         
-        <div className="flex items-center text-gray-600 mb-3">
+        <div className={`flex items-center mb-3 ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
           <User size={16} className="mr-2" />
           <span className="text-sm">{book.authors[0]}</span>
         </div>
         
         {book.publishedDate && (
-          <div className="flex items-center text-gray-600 mb-3">
+          <div className={`flex items-center mb-3 ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
             <Calendar size={16} className="mr-2" />
             <span className="text-sm">{book.publishedDate.substring(0, 4)}</span>
           </div>
         )}
         
-        <p className="text-gray-600 text-sm mb-4 line-clamp-3">
+        <p className={`text-sm mb-4 line-clamp-3 ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
           {book.description.length > 120 ? `${book.description.substring(0, 120)}...` : book.description}
         </p>
         
@@ -265,12 +274,18 @@ const BookFinder = () => {
             onClick={() => toggleFavorite(book)}
             className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-lg font-semibold transition-all duration-200 ${
               isFavorite(book.id)
-                ? 'bg-green-500 text-white hover:bg-green-600'
-                : 'bg-blue-600 hover:bg-blue-700 text-white'
+                ? 'bg-green-500 text-white hover:bg-green-600 shadow-md'
+                : 'bg-blue-600 hover:bg-blue-700 text-white shadow-md'
             }`}
           >
-            <Heart size={18} fill={isFavorite(book.id) ? 'white' : 'none'} />
-            {isFavorite(book.id) ? 'Favorited' : 'Add to Favorites'}
+            <Heart 
+              size={18} 
+              fill={isFavorite(book.id) ? 'white' : 'none'} 
+              className={isFavorite(book.id) ? 'text-white' : 'text-white'}
+            />
+            <span className="font-medium">
+              {isFavorite(book.id) ? 'Favorited' : 'Add to Favorites'}
+            </span>
           </button>
         </div>
       </div>
@@ -278,9 +293,11 @@ const BookFinder = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className={`min-h-screen transition-colors duration-300 ${isDarkMode ? 'bg-gray-900' : 'bg-gray-50'}`}>
       {/* Header */}
-      <header className="bg-white shadow-sm border-b">
+      <header className={`shadow-sm border-b transition-colors duration-300 ${
+        isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
+      }`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-6">
             <div className="flex items-center">
@@ -289,24 +306,47 @@ const BookFinder = () => {
                 <h1 className={`text-3xl ${siteConfig.fontStyle} ${getThemeClasses('gradient')}`}>
                   {siteConfig.name}
                 </h1>
-                <p className="text-sm text-gray-600 mt-1">{siteConfig.subtitle}</p>
+                <p className={`text-sm mt-1 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                  {siteConfig.subtitle}
+                </p>
               </div>
             </div>
             
             <div className="flex items-center gap-4">
+              {/* Dark/Light Mode Toggle */}
+              <button
+                onClick={() => setIsDarkMode(!isDarkMode)}
+                className={`p-2 rounded-lg transition-colors duration-200 ${
+                  isDarkMode 
+                    ? 'bg-gray-700 hover:bg-gray-600 text-yellow-400' 
+                    : 'bg-gray-100 hover:bg-gray-200 text-gray-600'
+                }`}
+                title={isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+              >
+                {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
+              </button>
+
               {/* Theme Selector */}
               <div className="relative group">
-                <button className="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors">
-                  <Palette size={20} className="text-gray-600" />
+                <button className={`p-2 rounded-lg transition-colors ${
+                  isDarkMode 
+                    ? 'bg-gray-700 hover:bg-gray-600 text-gray-300' 
+                    : 'bg-gray-100 hover:bg-gray-200 text-gray-600'
+                }`}>
+                  <Palette size={20} />
                 </button>
-                <div className="absolute right-0 top-12 bg-white rounded-lg shadow-lg border p-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 min-w-40">
+                <div className={`absolute right-0 top-12 rounded-lg shadow-lg border p-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 min-w-40 ${
+                  isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
+                }`}>
                   {Object.entries(themes).map(([key, themeOption]) => (
                     <button
                       key={key}
                       onClick={() => setCurrentTheme(key)}
                       className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors flex items-center gap-2 ${
-                        currentTheme === key ? 'bg-gray-100' : 'hover:bg-gray-50'
-                      }`}
+                        currentTheme === key 
+                          ? (isDarkMode ? 'bg-gray-700' : 'bg-gray-100') 
+                          : (isDarkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-50')
+                      } ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`}
                     >
                       <div className={`w-3 h-3 rounded-full bg-gradient-to-r ${themeOption.gradient}`}></div>
                       {themeOption.name}
@@ -321,7 +361,7 @@ const BookFinder = () => {
                   className={`px-4 py-2 rounded-lg font-medium transition-colors ${
                     currentPage === 'home'
                       ? getThemeClasses('accent')
-                      : 'text-gray-600 hover:text-blue-600'
+                      : (isDarkMode ? 'text-gray-300 hover:text-blue-400' : 'text-gray-600 hover:text-blue-600')
                   }`}
                 >
                   Home
@@ -331,7 +371,7 @@ const BookFinder = () => {
                   className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 ${
                     currentPage === 'favorites'
                       ? getThemeClasses('accent')
-                      : 'text-gray-600 hover:text-blue-600'
+                      : (isDarkMode ? 'text-gray-300 hover:text-blue-400' : 'text-gray-600 hover:text-blue-600')
                   }`}
                 >
                   <Heart size={18} />
@@ -357,7 +397,9 @@ const BookFinder = () => {
                     className={`px-6 py-3 rounded-full font-semibold transition-all duration-200 ${
                       activeCategory === category.id
                         ? getThemeClasses('active')
-                        : 'bg-white text-gray-700 hover:bg-gray-50 shadow-md'
+                        : (isDarkMode 
+                            ? 'bg-gray-800 text-gray-200 hover:bg-gray-700 shadow-md border border-gray-700' 
+                            : 'bg-white text-gray-700 hover:bg-gray-50 shadow-md')
                     }`}
                   >
                     {category.label}
@@ -370,14 +412,20 @@ const BookFinder = () => {
             <div className="mb-12">
               <div className="max-w-2xl mx-auto">
                 <div className="relative">
-                  <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+                  <Search className={`absolute left-4 top-1/2 transform -translate-y-1/2 ${
+                    isDarkMode ? 'text-gray-400' : 'text-gray-400'
+                  }`} size={20} />
                   <input
                     type="text"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     onKeyPress={(e) => e.key === 'Enter' && handleSearch(e)}
                     placeholder="Search books by Title or Author"
-                    className={`w-full pl-12 pr-4 py-4 text-lg rounded-full border-2 border-gray-200 focus:outline-none transition-colors ${getThemeClasses('border')}`}
+                    className={`w-full pl-12 pr-4 py-4 text-lg rounded-full border-2 focus:outline-none transition-colors ${
+                      isDarkMode 
+                        ? 'bg-gray-800 border-gray-600 focus:border-blue-500 text-white placeholder-gray-400' 
+                        : 'bg-white border-gray-200 focus:border-blue-500 text-gray-900 placeholder-gray-500'
+                    } ${getThemeClasses('border')}`}
                   />
                   <button
                     onClick={handleSearch}
@@ -408,21 +456,31 @@ const BookFinder = () => {
             {/* No Results */}
             {!loading && books.length === 0 && searchTerm && (
               <div className="text-center py-12">
-                <BookOpen className="mx-auto text-gray-400 mb-4" size={48} />
-                <h3 className="text-xl font-semibold text-gray-600 mb-2">No books found</h3>
-                <p className="text-gray-500">Try searching with different keywords or browse our categories.</p>
+                <BookOpen className={`mx-auto mb-4 ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`} size={48} />
+                <h3 className={`text-xl font-semibold mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                  No books found
+                </h3>
+                <p className={isDarkMode ? 'text-gray-400' : 'text-gray-500'}>
+                  Try searching with different keywords or browse our categories.
+                </p>
               </div>
             )}
           </>
         ) : (
           /* Favorites Page */
           <div>
-            <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">Your Favorite Books</h2>
+            <h2 className={`text-3xl font-bold mb-8 text-center ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+              Your Favorite Books
+            </h2>
             {favorites.length === 0 ? (
               <div className="text-center py-12">
-                <Heart className="mx-auto text-gray-400 mb-4" size={48} />
-                <h3 className="text-xl font-semibold text-gray-600 mb-2">No favorites yet</h3>
-                <p className="text-gray-500 mb-4">Start adding books to your favorites to see them here.</p>
+                <Heart className={`mx-auto mb-4 ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`} size={48} />
+                <h3 className={`text-xl font-semibold mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                  No favorites yet
+                </h3>
+                <p className={`mb-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                  Start adding books to your favorites to see them here.
+                </p>
                 <button
                   onClick={() => setCurrentPage('home')}
                   className={`px-6 py-3 rounded-lg transition-colors ${getThemeClasses('button')}`}
@@ -442,12 +500,16 @@ const BookFinder = () => {
       </main>
 
       {/* Mobile Navigation */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t shadow-lg">
+      <div className={`md:hidden fixed bottom-0 left-0 right-0 border-t shadow-lg ${
+        isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
+      }`}>
         <div className="flex">
           <button
             onClick={() => setCurrentPage('home')}
             className={`flex-1 py-4 flex flex-col items-center ${
-              currentPage === 'home' ? getThemeClasses() : 'text-gray-600'
+              currentPage === 'home' 
+                ? getThemeClasses() 
+                : (isDarkMode ? 'text-gray-400' : 'text-gray-600')
             }`}
           >
             <BookOpen size={20} />
@@ -456,7 +518,9 @@ const BookFinder = () => {
           <button
             onClick={() => setCurrentPage('favorites')}
             className={`flex-1 py-4 flex flex-col items-center ${
-              currentPage === 'favorites' ? getThemeClasses() : 'text-gray-600'
+              currentPage === 'favorites' 
+                ? getThemeClasses() 
+                : (isDarkMode ? 'text-gray-400' : 'text-gray-600')
             }`}
           >
             <Heart size={20} />
